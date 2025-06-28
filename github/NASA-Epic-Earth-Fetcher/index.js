@@ -1,68 +1,72 @@
 // Author : Therese Elvira Mombou Gatsing
 
+
 const axios = require('axios');
 const fs = require('fs');
 const readline = require('readline');
+const open = require('open').default;
 
-//All the requeets are made to the Base URL
+// API Configuration
 const Base_URL = "https://api.nasa.gov/EPIC/api/natural/date/{YYYY-MM-DD}";
-
-// API key for NASA to identify who is making the request
 const API_Key = "jEXcxb1MPL2ndsI8g3XU3CWOR020N6H4XTRmYA71";
+const DATA_FILE = 'epic_data.json';
 
 const getEpicdata = async (date) => {
+    try {
+        const full_URL = Base_URL.replace("{YYYY-MM-DD}", date) + "?api_key=" + API_Key;
+        const response = await axios.get(full_URL);  
 
-    const full_URL = Base_URL.replace("{YYYY-MM-DD}", date) + "?api_key=" + API_Key; // gives the full URL 
-    // making the request
-    const response = await axios.get(full_URL);  
-
-    if (response.status === 200) {
-        data = response.data;
-        fs.writeFileSync('epic_data.json', JSON.stringify(data, null, 2)); // save the data to a file
-        console.log("Data saved to epic_data.json");
-        //console.log(data);
-    } else {
-        console.log("Date not found or invalid API key.");
+        if (response.status === 200) {
+            fs.writeFileSync(DATA_FILE, JSON.stringify(response.data, null, 2));
+            console.log("Data saved to epic_data.json");
+            return true;
+        } else {
+            console.log("Date not found or invalid API key.");
+            return false;
+        }
+    } catch (error) {
+        console.error("Error fetching data:", error.message);
+        return false;
     }
-
 };
 
-// Use this function whenever you want a random image from stored data
-function showRandomEpicImage(filePath) {
-  const raw = fs.readFileSync(filePath, 'utf-8');
-  const images = JSON.parse(raw);
+async function showRandomEpicImage(filePath) {
+    try {
+        const raw = fs.readFileSync(filePath, 'utf-8');
+        const images = JSON.parse(raw);
 
-  if (!Array.isArray(images) || images.length === 0) {
-    console.log('No images found in data.');
-    return;
-  }
+        if (!Array.isArray(images) || images.length === 0) {
+            console.log('No images found in data.');
+            return;
+        }
 
-  const i = Math.floor(Math.random() * images.length);
-  const img = images[i];
+        const img = images[Math.floor(Math.random() * images.length)];
+        
+        console.log('\nNASA EPIC Image Details:');
+        console.log('🕒 Time (UTC):', img.date);
+        console.log('📝 Caption:', img.caption);
 
-  // Extract timestamp and caption
-  console.log('🕒 Time (UTC):', img.date);
-  console.log('📝 Caption:', img.caption);
+        // Construct the image URL
+        const dateParts = img.date.split(' ')[0].split('-');
+        const imgUrl = `https://epic.gsfc.nasa.gov/archive/natural/${dateParts.join('/')}/jpg/${img.image}.jpg`;
+        
+        console.log('\n🌍 Opening image in your browser...');
+        await open(imgUrl); // This will open the image URL in default browser
 
-  // Build and display the image URL
-  const dateParts = img.date.split(' ')[0].split('-');
-  const imgUrl = `https://epic.gsfc.nasa.gov/archive/natural/${dateParts.join('/')}/jpg/${img.image}.jpg`;
-  console.log('🌍 Image URL:', imgUrl);
+    } catch (error) {
+        console.error("Error displaying image:", error.message);
+    }
 }
 
-
-
-
-
 const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
+    input: process.stdin,
+    output: process.stdout
 });
 
-rl.question('Enter the date (YYYY-MM-DD): ', date => {
-  console.log('You entered:', date);
-  getEpicdata(date); 
-  showRandomEpicImage(); // Show a random image from the saved data
-  rl.close();
+rl.question('Enter the date (YYYY-MM-DD): ', async (date) => {
+    rl.close();
+    const success = await getEpicdata(date);
+    if (success) {
+        await showRandomEpicImage(DATA_FILE);
+    }
 });
-
