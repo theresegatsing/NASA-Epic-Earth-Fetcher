@@ -2,6 +2,7 @@
 
 const axios = require('axios');
 const fs = require('fs');
+const readline = require('readline');
 
 //All the requeets are made to the Base URL
 const Base_URL = "https://api.nasa.gov/EPIC/api/natural/date/{YYYY-MM-DD}";
@@ -10,6 +11,7 @@ const Base_URL = "https://api.nasa.gov/EPIC/api/natural/date/{YYYY-MM-DD}";
 const API_Key = "jEXcxb1MPL2ndsI8g3XU3CWOR020N6H4XTRmYA71";
 
 const getEpicdata = async (date) => {
+
     const full_URL = Base_URL.replace("{YYYY-MM-DD}", date) + "?api_key=" + API_Key; // gives the full URL 
     // making the request
     const response = await axios.get(full_URL);  
@@ -24,6 +26,43 @@ const getEpicdata = async (date) => {
     }
 
 };
-getEpicdata("2022-05-25");
 
+// Use this function whenever you want a random image from stored data
+function showRandomEpicImage(filePath) {
+  const raw = fs.readFileSync(filePath, 'utf-8');
+  const images = JSON.parse(raw);
+
+  if (!Array.isArray(images) || images.length === 0) {
+    console.log('No images found in data.');
+    return;
+  }
+
+  const i = Math.floor(Math.random() * images.length);
+  const img = images[i];
+
+  // Extract timestamp and caption
+  console.log('🕒 Time (UTC):', img.date);
+  console.log('📝 Caption:', img.caption);
+
+  // Build and display the image URL
+  const dateParts = img.date.split(' ')[0].split('-');
+  const imgUrl = `https://epic.gsfc.nasa.gov/archive/natural/${dateParts.join('/')}/jpg/${img.image}.jpg`;
+  console.log('🌍 Image URL:', imgUrl);
+}
+
+
+
+
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+rl.question('Enter the date (YYYY-MM-DD): ', date => {
+  console.log('You entered:', date);
+  getEpicdata(date); 
+  showRandomEpicImage(); // Show a random image from the saved data
+  rl.close();
+});
 
