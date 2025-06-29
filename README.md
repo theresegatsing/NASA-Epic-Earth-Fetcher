@@ -25,9 +25,11 @@ Interactive Node.js app that fetches real satellite images of Earth from NASA's 
    cd NASA-Epic-Earth-Fetcher
    
 2. **Install dependencies**
+   ```bash
    npm install
    
 3. **Run the application**
+   ```bash
      node index.js
 
 ---
