@@ -30,7 +30,7 @@ Interactive Node.js app that fetches real satellite images of Earth from NASA's 
    
 3. **Run the application**
    ```bash
-     node index.js
+   node index.js
 
 ---
 ## 🎥 Video Walkthrough
