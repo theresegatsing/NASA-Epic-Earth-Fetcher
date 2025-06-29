@@ -1,12 +1,36 @@
-# NASA-Epic-Earth-Fetcher
+# 🌍 NASA EPIC Earth Image Fetcher
 
-To recap I will ask the user to input a date and then pictures of the earcth taken from the NOASS satelite will be shown. can I also access the time at which that picture was taken?
-identifier — unique id for the image
+Interactive Node.js app that fetches real satellite images of Earth from NASA's EPIC camera on NOAA's DSCOVR spacecraft. Users input a date, metadata is saved, and a random image opens in the browser with timestamp and caption.
 
-caption — description
+---
 
-image — image filename
+## 🚀 Features
 
-date — timestamp when the image was taken (in UTC), e.g., "2024-06-27 00:41:17"
+- Interactive prompt for date in `YYYY-MM-DD` format  
+- Fetches EPIC imagery metadata from NASA  
+- Saves JSON metadata to `epic_data.json`  
+- Randomly selects one image  
+- Displays:
+  - 🕒 Time (UTC)
+  - 📝 Caption (short description)
+  - 🌍 Opens the image in your browser
 
-centroid_coordinates — latitude and longitude of the center of the image
+---
+
+## 💻 Setup & Usage
+
+1. **Clone the repository**  
+   ```bash
+   git clone https://github.com/theresegatsing/NASA-Epic-Earth-Fetcher.git
+   cd NASA-Epic-Earth-Fetcher
+   
+2. **Install dependencies**
+   npm install
+   
+3. **Run the application**
+     node index.js
+
+---
+## 🎥 Video Walkthrough
+  GIF created with ScreenToGif
+<img src='Walkthrough.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
